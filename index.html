@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Предзаказ кофе</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            max-width: 560px;
+            width: 100%;
+            background: #ffffff;
+            padding: 40px 35px;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+        .logo { font-size: 32px; margin-bottom: 4px; }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0b1b2f;
+            margin-bottom: 6px;
+        }
+        .subhead {
+            color: #5a6b7e;
+            margin-bottom: 28px;
+            padding: 12px 16px;
+            background: #f0f4fe;
+            border-radius: 12px;
+            border-left: 4px solid #4a76a8;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .form-group { margin-bottom: 20px; }
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1e2a3a;
+            margin-bottom: 6px;
+        }
+        label .required { color: #e53e3e; }
+        input, textarea, select {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            background: #f7f9fc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            outline: none;
+            font-family: inherit;
+            transition: 0.2s;
+            appearance: auto;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: #4a76a8;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(74, 118, 168, 0.1);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6b7e' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+
+        /* -------- ЧЕКБОКСЫ -------- */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            background: #f7fafc;
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            transition: 0.2s;
+        }
+        .checkbox-group:hover {
+            border-color: #bdd3f0;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            margin-top: 1px;
+            accent-color: #4a76a8;
+            cursor: pointer;
+            appearance: checkbox;
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+        .checkbox-group input[type="checkbox"]:checked {
+            accent-color: #4a76a8;
+            border-color: #4a76a8;
+        }
+        .checkbox-group label {
+            font-weight: 400;
+            font-size: 15px;
+            color: #1e2a3a;
+            cursor: pointer;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+        .checkbox-group label strong {
+            color: #0b1b2f;
+        }
+        .checkbox-group .hint {
+            font-size: 13px;
+            color: #6b7d92;
+            margin-top: 2px;
+        }
+        .checkbox-group .hint a {
+            color: #4a76a8;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .checkbox-group .hint a:hover {
+            color: #1a4b8c;
+        }
+
+        .checkbox-group + .checkbox-group {
+            margin-top: 12px;
+        }
+
+        /* Ошибка валидации */
+        .input-error {
+            border-color: #e53e3e !important;
+            box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.1) !important;
+        }
+        .error-message {
+            color: #e53e3e;
+            font-size: 13px;
+            margin-top: 4px;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+
+        .btn {
+            background: #0b1b2f;
+            color: white;
+            border: none;
+            padding: 17px 20px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 40px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 8px 20px rgba(11, 27, 47, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            background: #1a2f4a;
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px rgba(11, 27, 47, 0.25);
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+        .status.success {
+            display: flex;
+            background: #e6f7ed;
+            color: #0b5e3a;
+            border: 1px solid #b2dfc8;
+        }
+        .status.error {
+            display: flex;
+            background: #fde8e8;
+            color: #b33636;
+            border: 1px solid #fccccc;
+        }
+        .status.loading {
+            display: flex;
+            background: #eaf0fe;
+            color: #1a4b8c;
+            border: 1px solid #c8d9f0;
+        }
+        .footer {
+            margin-top: 22px;
+            font-size: 13px;
+            color: #8a9baa;
+            text-align: center;
+            border-top: 1px solid #edf2f7;
+            padding-top: 18px;
+        }
+        .badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e4b8a;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 30px;
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+        }
+        .point-tag {
+            display: inline-block;
+            font-size: 12px;
+            color: #4a76a8;
+            background: #eef3fe;
+            padding: 2px 10px;
+            border-radius: 12px;
+            margin-top: 4px;
+        }
+        .required-star {
+            color: #e53e3e;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="logo">☕</div>
+    <h1>Предзаказ кофе</h1>
+    <div class="subhead">
+        ⚡ Оставьте заявку — и мы приготовим ваш напиток к выбранному времени!
+    </div>
+
+    <form id="preorderForm" novalidate>
+        <!-- Имя -->
+        <div class="form-group">
+            <label for="name">Имя <span class="required-star">*</span></label>
+            <input type="text" id="name" placeholder="Например: Алексей" required>
+            <div class="error-message" id="nameError">Пожалуйста, укажите ваше имя</div>
+        </div>
+
+        <!-- Телефон -->
+        <div class="form-group">
+            <label for="phone">Телефон <span class="required-star">*</span></label>
+            <input type="tel" id="phone" placeholder="+7 999 123 45 67" required>
+            <div class="error-message" id="phoneError">Пожалуйста, укажите номер телефона</div>
+        </div>
+
+        <!-- Точка самовывоза -->
+        <div class="form-group">
+            <label for="pickupPoint">📍 Точка самовывоза <span class="required-star">*</span></label>
+            <select id="pickupPoint" required>
+                <option value="">— Выберите точку —</option>
+                <option value="Винокурова д55 (ТЦ &quot;Олимп&quot;)">Винокурова д55 (ТЦ "Олимп")</option>
+                <option value="Советская д44б (ост &quot;Роща&quot;)">Советская д44б (ост "Роща")</option>
+                <option value="Винокурова 70а (павильон рядом с ТЦ &quot;Семья&quot;)">Винокурова 70а (павильон рядом с ТЦ "Семья")</option>
+                <option value="ул.10 Пятилетки, 64а (рядом с ТЦ &quot;Турист&quot;)">ул.10 Пятилетки, 64а (рядом с ТЦ "Турист")</option>
+            </select>
+            <div class="error-message" id="pointError">Пожалуйста, выберите точку самовывоза</div>
+            <div class="point-tag">Выберите удобную точку</div>
+        </div>
+
+        <!-- Комментарий -->
+        <div class="form-group">
+            <label for="comment">Ваш заказ</label>
+            <textarea id="comment" placeholder="Какой кофе, размер, добавки, пожелания..."></textarea>
+        </div>
+
+        <!-- ЧЕКБОКС 1: Связь с бариста -->
+        <div class="form-group">
+            <div class="checkbox-group" id="callbackGroup">
+                <input type="checkbox" id="callbackConsent" required>
+                <label for="callbackConsent">
+                    <strong>С вами свяжется бариста для подтверждения заказа <span class="required-star">*</span></strong>
+                    <div class="hint">Мы перезвоним в течение 15 минут, чтобы уточнить детали</div>
+                </label>
+            </div>
+            <div class="error-message" id="callbackError">Подтвердите, что с вами свяжется бариста</div>
+        </div>
+
+        <!-- ЧЕКБОКС 2: Согласие на обработку ПД -->
+        <div class="form-group">
+            <div class="checkbox-group" id="personalDataGroup">
+                <input type="checkbox" id="personalDataConsent" required>
+                <label for="personalDataConsent">
+                    <strong>Я даю согласие на обработку персональных данных <span class="required-star">*</span></strong>
+                    <div class="hint">
+                        Ваши данные используются только для оформления заказа и не передаются третьим лицам.
+                        <a href="#" onclick="alert('Политика обработки персональных данных:\n\nВаши имя, телефон и данные заказа используются исключительно для связи с вами и выполнения заказа. Данные не передаются третьим лицам и хранятся в зашифрованном виде. Вы можете отказаться от обработки данных в любой момент, написав нам.'); return false;">
+                         
+                        </a>
+                    </div>
+                </label>
+            </div>
+            <div class="error-message" id="personalDataError">Дайте согласие на обработку персональных данных</div>
+        </div>
+
+        <button type="submit" class="btn" id="submitBtn">
+            <span>📩</span> Отправить предзаказ
+        </button>
+    </form>
+
+    <div id="statusMessage" class="status"></div>
+    <div class="footer">
+        ✅ Заявка уйдёт менеджеру в VK
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('preorderForm');
+    const statusDiv = document.getElementById('statusMessage');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Все поля
+    const nameInput = document.getElementById('name');
+    const phoneInput = document.getElementById('phone');
+    const pickupPoint = document.getElementById('pickupPoint');
+    const commentInput = document.getElementById('comment');
+    const callbackCheckbox = document.getElementById('callbackConsent');
+    const personalDataCheckbox = document.getElementById('personalDataConsent');
+
+    // Элементы для ошибок
+    const nameError = document.getElementById('nameError');
+    const phoneError = document.getElementById('phoneError');
+    const pointError = document.getElementById('pointError');
+    const callbackError = document.getElementById('callbackError');
+    const personalDataError = document.getElementById('personalDataError');
+
+    // Функция для проверки одного поля
+    function validateField(input, errorElement, condition) {
+        if (!condition) {
+            input.classList.add('input-error');
+            errorElement.classList.add('show');
+            return false;
+        } else {
+            input.classList.remove('input-error');
+            errorElement.classList.remove('show');
+            return true;
+        }
+    }
+
+    // Проверка чекбокса
+    function validateCheckbox(checkbox, errorElement) {
+        const group = checkbox.closest('.checkbox-group');
+        if (!checkbox.checked) {
+            group.style.borderColor = '#e53e3e';
+            group.style.boxShadow = '0 0 0 4px rgba(229, 62, 62, 0.1)';
+            errorElement.classList.add('show');
+            return false;
+        } else {
+            group.style.borderColor = '#e2e8f0';
+            group.style.boxShadow = 'none';
+            errorElement.classList.remove('show');
+            return true;
+        }
+    }
+
+    // Валидация всей формы
+    function validateForm() {
+        const isNameValid = validateField(
+            nameInput, nameError,
+            nameInput.value.trim().length > 0
+        );
+
+        const isPhoneValid = validateField(
+            phoneInput, phoneError,
+            phoneInput.value.trim().length > 0
+        );
+
+        const isPointValid = validateField(
+            pickupPoint, pointError,
+            pickupPoint.value !== ''
+        );
+
+        const isCallbackValid = validateCheckbox(
+            callbackCheckbox, callbackError
+        );
+
+        const isPersonalDataValid = validateCheckbox(
+            personalDataCheckbox, personalDataError
+        );
+
+        // Комментарий не проверяем (необязательный)
+
+        return isNameValid && isPhoneValid && isPointValid && 
+               isCallbackValid && isPersonalDataValid;
+    }
+
+    // Очистка ошибок при вводе
+    nameInput.addEventListener('input', () => {
+        if (nameInput.value.trim().length > 0) {
+            nameInput.classList.remove('input-error');
+            nameError.classList.remove('show');
+        }
+    });
+
+    phoneInput.addEventListener('input', () => {
+        if (phoneInput.value.trim().length > 0) {
+            phoneInput.classList.remove('input-error');
+            phoneError.classList.remove('show');
+        }
+    });
+
+    pickupPoint.addEventListener('change', () => {
+        if (pickupPoint.value !== '') {
+            pickupPoint.classList.remove('input-error');
+            pointError.classList.remove('show');
+        }
+    });
+
+    callbackCheckbox.addEventListener('change', () => {
+        const group = callbackCheckbox.closest('.checkbox-group');
+        if (callbackCheckbox.checked) {
+            group.style.borderColor = '#e2e8f0';
+            group.style.boxShadow = 'none';
+            callbackError.classList.remove('show');
+        } else {
+            group.style.borderColor = '#e53e3e';
+            group.style.boxShadow = '0 0 0 4px rgba(229, 62, 62, 0.1)';
+            callbackError.classList.add('show');
+        }
+    });
+
+    personalDataCheckbox.addEventListener('change', () => {
+        const group = personalDataCheckbox.closest('.checkbox-group');
+        if (personalDataCheckbox.checked) {
+            group.style.borderColor = '#e2e8f0';
+            group.style.boxShadow = 'none';
+            personalDataError.classList.remove('show');
+        } else {
+            group.style.borderColor = '#e53e3e';
+            group.style.boxShadow = '0 0 0 4px rgba(229, 62, 62, 0.1)';
+            personalDataError.classList.add('show');
+        }
+    });
+
+    function setStatus(message, type = 'loading') {
+        statusDiv.className = 'status ' + type;
+        statusDiv.textContent = message;
+        if (type !== 'loading') {
+            setTimeout(() => {
+                statusDiv.className = 'status';
+                statusDiv.textContent = '';
+            }, 6000);
+        }
+    }
+
+    async function sendOrder(data) {
+        const response = await fetch('http://localhost:8000/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Ошибка сервера');
+        }
+        return await response.json();
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Запускаем полную валидацию
+        if (!validateForm()) {
+            setStatus('❌ Заполните все обязательные поля и отметьте чекбоксы', 'error');
+            // Прокручиваем к первому полю с ошибкой
+            const firstError = document.querySelector('.input-error, .checkbox-group[style*="border-color: rgb(229, 62, 62)"]');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
+        const name = nameInput.value.trim();
+        const phone = phoneInput.value.trim();
+        const point = pickupPoint.value;
+        const comment = commentInput.value.trim();
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Отправка...';
+        setStatus('⏳ Отправляем заявку...', 'loading');
+
+        try {
+            await sendOrder({
+                name,
+                phone,
+                pickupPoint: point,
+                comment: comment || '—',
+                callbackConsent: 'Да',
+                personalDataConsent: 'Да'
+            });
+            setStatus('✅ Предзаказ оформлен! Бариста свяжется с вами для подтверждения.', 'success');
+            form.reset();
+            
+            // Сбрасываем стили чекбоксов
+            document.querySelectorAll('.checkbox-group').forEach(g => {
+                g.style.borderColor = '#e2e8f0';
+                g.style.boxShadow = 'none';
+            });
+            
+            submitBtn.innerHTML = '✅ Готово';
+            setTimeout(() => {
+                submitBtn.innerHTML = '📩 Отправить предзаказ';
+            }, 2000);
+        } catch (error) {
+            console.error('Ошибка:', error);
+            setStatus(`❌ Не удалось отправить: ${error.message || 'попробуйте позже'}`, 'error');
+            submitBtn.innerHTML = '📩 Отправить предзаказ';
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>
