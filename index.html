@@ -293,7 +293,7 @@
             <div class="point-tag">Выберите удобную точку</div>
         </div>
 
-        <!-- Время самовывоза: с 08:00 до 21:00 -->
+        <!-- Время самовывоза: с 08:00 до 21:00, интервал 15 минут -->
         <div class="form-group">
             <label for="pickupTime">⏰ Время самовывоза <span class="required-star">*</span></label>
             <div class="time-input-group">
@@ -318,10 +318,13 @@
                 <select id="pickupMinute" required>
                     <option value="">Мин</option>
                     <option value="00">00</option>
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="45">45</option>
                 </select>
             </div>
             <div class="error-message" id="timeError">Пожалуйста, выберите время самовывоза</div>
-            <div class="point-tag">Выберите удобное время (с 08:00 до 21:00)</div>
+            <div class="point-tag">Выберите удобное время (с 08:00 до 21:00, интервал 15 минут)</div>
         </div>
 
         <!-- Комментарий -->
