@@ -247,11 +247,18 @@
         .time-input-group select {
             flex: 1;
         }
+        .time-input-group .colon {
+            font-size: 20px;
+            color: #4a76a8;
+            align-self: center;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
 <div class="card">
     <div class="logo">☕</div>
+    <div class="badge">🔥 Ограниченный выпуск</div>
     <h1>Предзаказ кофе</h1>
     <div class="subhead">
         ⚡ Оставьте заявку — и мы приготовим ваш напиток к выбранному времени!
@@ -286,7 +293,7 @@
             <div class="point-tag">Выберите удобную точку</div>
         </div>
 
-        <!-- 🆕 Время самовывоза -->
+        <!-- Время самовывоза: с 08:00 до 21:00 -->
         <div class="form-group">
             <label for="pickupTime">⏰ Время самовывоза <span class="required-star">*</span></label>
             <div class="time-input-group">
@@ -307,17 +314,14 @@
                     <option value="20">20</option>
                     <option value="21">21</option>
                 </select>
-                <span style="font-size: 20px; color: #4a76a8; align-self: center;">:</span>
+                <span class="colon">:</span>
                 <select id="pickupMinute" required>
                     <option value="">Мин</option>
                     <option value="00">00</option>
-                    <option value="15">15</option>
-                    <option value="30">30</option>
-                    <option value="45">45</option>
                 </select>
             </div>
             <div class="error-message" id="timeError">Пожалуйста, выберите время самовывоза</div>
-            <div class="point-tag">Выберите удобное время</div>
+            <div class="point-tag">Выберите удобное время (с 08:00 до 21:00)</div>
         </div>
 
         <!-- Комментарий -->
@@ -447,7 +451,6 @@
                isCallbackValid && isPersonalDataValid;
     }
 
-    // Очистка ошибок при вводе
     nameInput.addEventListener('input', () => {
         if (nameInput.value.trim().length > 0) {
             nameInput.classList.remove('input-error');
