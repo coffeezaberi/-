@@ -240,30 +240,39 @@
             color: #e53e3e;
             font-weight: 700;
         }
+        .time-input-group {
+            display: flex;
+            gap: 12px;
+        }
+        .time-input-group select {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
 <div class="card">
     <div class="logo">☕</div>
-    <div class="badge">🔥 Ограниченный выпуск</div>
     <h1>Предзаказ кофе</h1>
     <div class="subhead">
         ⚡ Оставьте заявку — и мы приготовим ваш напиток к выбранному времени!
     </div>
 
     <form id="preorderForm" novalidate>
+        <!-- Имя -->
         <div class="form-group">
             <label for="name">Имя <span class="required-star">*</span></label>
             <input type="text" id="name" placeholder="Например: Алексей" required>
             <div class="error-message" id="nameError">Пожалуйста, укажите ваше имя</div>
         </div>
 
+        <!-- Телефон -->
         <div class="form-group">
             <label for="phone">Телефон <span class="required-star">*</span></label>
             <input type="tel" id="phone" placeholder="+7 999 123 45 67" required>
             <div class="error-message" id="phoneError">Пожалуйста, укажите номер телефона</div>
         </div>
 
+        <!-- Точка самовывоза -->
         <div class="form-group">
             <label for="pickupPoint">📍 Точка самовывоза <span class="required-star">*</span></label>
             <select id="pickupPoint" required>
@@ -277,11 +286,48 @@
             <div class="point-tag">Выберите удобную точку</div>
         </div>
 
+        <!-- 🆕 Время самовывоза -->
+        <div class="form-group">
+            <label for="pickupTime">⏰ Время самовывоза <span class="required-star">*</span></label>
+            <div class="time-input-group">
+                <select id="pickupHour" required>
+                    <option value="">Час</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                </select>
+                <span style="font-size: 20px; color: #4a76a8; align-self: center;">:</span>
+                <select id="pickupMinute" required>
+                    <option value="">Мин</option>
+                    <option value="00">00</option>
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="45">45</option>
+                </select>
+            </div>
+            <div class="error-message" id="timeError">Пожалуйста, выберите время самовывоза</div>
+            <div class="point-tag">Выберите удобное время</div>
+        </div>
+
+        <!-- Комментарий -->
         <div class="form-group">
             <label for="comment">Комментарий к заказу</label>
             <textarea id="comment" placeholder="Какой кофе, размер, добавки, пожелания..."></textarea>
         </div>
 
+        <!-- ЧЕКБОКС 1: Связь с бариста -->
         <div class="form-group">
             <div class="checkbox-group" id="callbackGroup">
                 <input type="checkbox" id="callbackConsent" required>
@@ -293,6 +339,7 @@
             <div class="error-message" id="callbackError">Подтвердите, что с вами свяжется бариста</div>
         </div>
 
+        <!-- ЧЕКБОКС 2: Согласие на обработку ПД -->
         <div class="form-group">
             <div class="checkbox-group" id="personalDataGroup">
                 <input type="checkbox" id="personalDataConsent" required>
@@ -328,6 +375,8 @@
     const nameInput = document.getElementById('name');
     const phoneInput = document.getElementById('phone');
     const pickupPoint = document.getElementById('pickupPoint');
+    const pickupHour = document.getElementById('pickupHour');
+    const pickupMinute = document.getElementById('pickupMinute');
     const commentInput = document.getElementById('comment');
     const callbackCheckbox = document.getElementById('callbackConsent');
     const personalDataCheckbox = document.getElementById('personalDataConsent');
@@ -335,6 +384,7 @@
     const nameError = document.getElementById('nameError');
     const phoneError = document.getElementById('phoneError');
     const pointError = document.getElementById('pointError');
+    const timeError = document.getElementById('timeError');
     const callbackError = document.getElementById('callbackError');
     const personalDataError = document.getElementById('personalDataError');
 
@@ -381,6 +431,11 @@
             pickupPoint.value !== ''
         );
 
+        const isTimeValid = validateField(
+            pickupHour, timeError,
+            pickupHour.value !== '' && pickupMinute.value !== ''
+        );
+
         const isCallbackValid = validateCheckbox(
             callbackCheckbox, callbackError
         );
@@ -389,10 +444,11 @@
             personalDataCheckbox, personalDataError
         );
 
-        return isNameValid && isPhoneValid && isPointValid && 
+        return isNameValid && isPhoneValid && isPointValid && isTimeValid &&
                isCallbackValid && isPersonalDataValid;
     }
 
+    // Очистка ошибок при вводе
     nameInput.addEventListener('input', () => {
         if (nameInput.value.trim().length > 0) {
             nameInput.classList.remove('input-error');
@@ -412,6 +468,16 @@
             pickupPoint.classList.remove('input-error');
             pointError.classList.remove('show');
         }
+    });
+
+    [pickupHour, pickupMinute].forEach(el => {
+        el.addEventListener('change', () => {
+            if (pickupHour.value !== '' && pickupMinute.value !== '') {
+                pickupHour.classList.remove('input-error');
+                pickupMinute.classList.remove('input-error');
+                timeError.classList.remove('show');
+            }
+        });
     });
 
     callbackCheckbox.addEventListener('change', () => {
@@ -451,7 +517,6 @@
         }
     }
 
-    // 🔥 ГЛАВНОЕ: ЗДЕСЬ ВСТАВЛЕНА ВАША ССЫЛКА НА RENDER
     async function sendOrder(data) {
         const response = await fetch('https://x84ry3av1a.onrender.com/send', {
             method: 'POST',
@@ -483,6 +548,7 @@
         const name = nameInput.value.trim();
         const phone = phoneInput.value.trim();
         const point = pickupPoint.value;
+        const time = `${pickupHour.value}:${pickupMinute.value}`;
         const comment = commentInput.value.trim();
 
         submitBtn.disabled = true;
@@ -494,6 +560,7 @@
                 name,
                 phone,
                 pickupPoint: point,
+                pickupTime: time,
                 comment: comment || '—',
                 callbackConsent: 'Да',
                 personalDataConsent: 'Да'
